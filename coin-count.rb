@@ -22,11 +22,50 @@ class CoinCount
   end
 
   def change
-    @change_array.push( {:pennies => @cents} )
-    @change_array.push( {:nickels => Integer( @cents / 5 )} ) if @cents >= 5
+    make_change_and_descend(@cents, {:pennies => 0, :nickels => 0, :dimes => 0, :quarters => 0})
+    puts @change_array
     @change_array
   end
 
+  private
+
+  def make_change_and_descend(remaining, change_hash)
+    puts "make_change called with remaining: #{remaining}, hash: #{change_hash}"
+    if remaining == 0
+      puts "pushing leaf node: #{change_hash}"
+      @change_array.push( change_hash )
+      return
+    end
+    nexthash = change_hash.clone.merge(:pennies => change_hash[:pennies] += 1)
+    nextremaining = remaining - 1
+    puts "pennies case: #{nextremaining}, #{nexthash}"
+    if remaining >= 1
+      puts "descending with #{nextremaining}, #{nexthash}"
+      make_change_and_descend(nextremaining, nexthash)
+    end
+
+    nexthash = change_hash.clone.merge(:nickels => change_hash[:nickels] += 1)
+    nextremaining = remaining - 5
+    puts "nickels case: #{nextremaining}, #{nexthash}"
+    if remaining >= 5
+      puts "descending with #{nextremaining}, #{nexthash}"
+      make_change_and_descend(nextremaining, nexthash)
+    end
+
+    nexthash = change_hash.clone.merge(:dimes => change_hash[:dimes] += 1)
+    nextremaining = remaining - 10
+    if remaining >= 10
+      puts "descending with #{nextremaining}, #{nexthash}"
+      make_change_and_descend(nextremaining, nexthash)
+    end
+
+    nexthash = change_hash.clone.merge(:quarters => change_hash[:quarters] += 1)
+    nextremaining = remaining - 25
+    if remaining >= 25
+      puts "descending with #{nextremaining}, #{nexthash}"
+      make_change_and_descend(nextremaining, nexthash)
+    end
+  end
 end
 
 class InvalidInput < Exception; end
