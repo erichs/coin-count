@@ -3,19 +3,13 @@
 require 'colorize'
 
 class CoinCount
-  attr_accessor :cents, :change_array
+  attr_accessor :cents, :change_array, :normal
 
-  TYPES = {
-    :quarters => 25,
-    :dimes => 10,
-    :nickels => 5,
-    :pennies => 1
-  }
-
-  def initialize(cents=100)
+  def initialize(cents=100, mode=:normal)
     begin
       @cents = Integer(cents)
       @change_array = []
+      @mode = mode
     rescue
       raise InvalidInput
     end
@@ -23,48 +17,27 @@ class CoinCount
 
   def change
     make_change_and_descend(@cents, {:pennies => 0, :nickels => 0, :dimes => 0, :quarters => 0})
-    puts @change_array
-    @change_array
+    @change_array.uniq
   end
 
   private
 
+  def debug( str )
+    puts str if @mode == :debug
+  end
+
   def make_change_and_descend(remaining, change_hash)
-    puts "make_change called with remaining: #{remaining}, hash: #{change_hash}"
+    debug "make_change called with remaining: #{remaining}, hash: #{change_hash}"
     if remaining == 0
-      puts "pushing leaf node: #{change_hash}"
+      debug "pushing leaf node: #{change_hash}"
       @change_array.push( change_hash )
       return
     end
-    nexthash = change_hash.clone.merge(:pennies => change_hash[:pennies] += 1)
-    nextremaining = remaining - 1
-    puts "pennies case: #{nextremaining}, #{nexthash}"
-    if remaining >= 1
-      puts "descending with #{nextremaining}, #{nexthash}"
-      make_change_and_descend(nextremaining, nexthash)
-    end
 
-    nexthash = change_hash.clone.merge(:nickels => change_hash[:nickels] += 1)
-    nextremaining = remaining - 5
-    puts "nickels case: #{nextremaining}, #{nexthash}"
-    if remaining >= 5
-      puts "descending with #{nextremaining}, #{nexthash}"
-      make_change_and_descend(nextremaining, nexthash)
-    end
-
-    nexthash = change_hash.clone.merge(:dimes => change_hash[:dimes] += 1)
-    nextremaining = remaining - 10
-    if remaining >= 10
-      puts "descending with #{nextremaining}, #{nexthash}"
-      make_change_and_descend(nextremaining, nexthash)
-    end
-
-    nexthash = change_hash.clone.merge(:quarters => change_hash[:quarters] += 1)
-    nextremaining = remaining - 25
-    if remaining >= 25
-      puts "descending with #{nextremaining}, #{nexthash}"
-      make_change_and_descend(nextremaining, nexthash)
-    end
+    make_change_and_descend(remaining - 1, change_hash.merge(:pennies => change_hash[:pennies] + 1)) if remaining >= 1
+    make_change_and_descend(remaining - 5, change_hash.merge(:nickels => change_hash[:nickels] + 1)) if remaining >= 5
+    make_change_and_descend(remaining - 10, change_hash.merge(:dimes => change_hash[:dimes] + 1)) if remaining >= 10
+    make_change_and_descend(remaining - 25, change_hash.merge(:quarters => change_hash[:quarters] + 1)) if remaining >= 25
   end
 end
 
