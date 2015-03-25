@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+gem 'turn'
+gem 'ansi'
+gem 'simplecov'
+gem 'colorize'
+gem 'rake'
