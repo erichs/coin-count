@@ -3,7 +3,7 @@
 require 'colorize'
 
 class CoinCount
-  attr_accessor :cents
+  attr_accessor :cents, :change_array
 
   TYPES = {
     :quarters => 25,
@@ -15,14 +15,16 @@ class CoinCount
   def initialize(cents=100)
     begin
       @cents = Integer(cents)
+      @change_array = []
     rescue
       raise InvalidInput
     end
   end
 
   def change
-    [{:pennies => @cents}]
-
+    @change_array.push( {:pennies => @cents} )
+    @change_array.push( {:nickels => Integer( @cents / 5 )} ) if @cents >= 5
+    @change_array
   end
 
 end

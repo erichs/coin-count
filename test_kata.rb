@@ -13,4 +13,8 @@ describe CoinCount do
     CoinCount.new(1).change.must_equal [ { :pennies => 1 } ]
   end
 
+  it "makes change for 5 cents" do
+    CoinCount.new(5).change.must_equal [ { :pennies => 5 }, { :nickels => 1} ]
+
+  end
 end
