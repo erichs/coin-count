@@ -10,11 +10,11 @@ require './coin-count'
 
 describe CoinCount do
   it "makes change for 1 penny" do
-    CoinCount.new(1).change.must_equal [ { :pennies => 1 } ]
+    CoinCount.new(1).change.count.must_equal 1
   end
 
   it "makes change for 5 cents" do
-    CoinCount.new(5).change.must_equal [ { :pennies => 5 }, { :nickels => 1} ]
-
+    CoinCount.new(5).change.count.must_equal 2
   end
+
 end
